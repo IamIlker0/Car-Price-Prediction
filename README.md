@@ -54,8 +54,8 @@ pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 - **Outliers**: The `Price` column contained outliers, identified using the **Interquartile Range (IQR) method** and removed for better model stability.
 - **Categorical Encoding**: Features like `Fuel_Type` and `Transmission` were **one-hot encoded** for model compatibility.
 - **Feature Engineering**:
-  - `Age`: Computed as `2025 - Year`
-  - `Mileage_per_Age`: Defined as `Mileage / Age`
+  - `Age`: Computed as `2025 - Year`, representing the car's age.
+  - `Mileage_per_Age`: Defined as `Mileage / Age`, indicating the average mileage per year.
 - **Feature Scaling**: `StandardScaler` was applied to numerical features for uniform scaling.
 
 ## Model Selection and Evaluation
@@ -100,3 +100,4 @@ Contributions are welcome! If you'd like to improve the model, feel free to:
 ## License
 
 The dataset specifies **Other (specified in description)** as its license. Ensure compliance with Kaggle's terms before commercial use.
+
