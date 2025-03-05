@@ -10,7 +10,6 @@ import time
 # Page configuration
 st.set_page_config(
     page_title="Car Price Prediction & Analysis",
-    page_icon="🚗",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -259,13 +258,13 @@ with tab1:
     with col1:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Price by Fuel & Brand")
-        st.image("C:/Users/ilker/Downloads/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
+        st.image("images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
         dashboard_choice1 = st.button("View Dashboard", key="db1")
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Engine Specs Heatmap")
-        st.image("dashboard3_screenshot.png", output_format="PNG", width=None)
+        st.image("images/Best_Feature_plot.png", output_format="PNG", width=None)
         dashboard_choice3 = st.button("View Dashboard", key="db3")
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -273,13 +272,13 @@ with tab1:
     with col2:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Model Price Analysis")
-        st.image("dashboard2_screenshot.png", output_format="PNG", width=None)
+        st.image("images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
         dashboard_choice2 = st.button("View Dashboard", key="db2")
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Price Trend Forecast")
-        st.image("dashboard4_screenshot.png", output_format="PNG", width=None)
+        st.image("images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
         dashboard_choice4 = st.button("View Dashboard", key="db4")
         st.markdown('</div>', unsafe_allow_html=True)
         
