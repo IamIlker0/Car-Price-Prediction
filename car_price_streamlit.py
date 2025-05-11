@@ -6,6 +6,7 @@ import pickle
 import plotly.express as px
 import plotly.graph_objects as go
 import time
+import pandas as pd
 
 # Page configuration
 st.set_page_config(
@@ -14,9 +15,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS styling with fixes for deprecation warnings and scrolling
 st.markdown("""
 <style>
+    .dashboard-main-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: white;
+        background-color: #084272;
+        padding: 8px 15px;
+        border-radius: 5px;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 3px solid #003366;
+    }
     .dashboard-card {
         padding: 20px;
         border-radius: 10px;
@@ -30,29 +42,21 @@ st.markdown("""
     .dashboard-card:hover {
         transform: translateY(-5px);
     }
-    /* Fixed dashboard view section */
-    .dashboard-view {
-        margin-top: 40px;
-        padding-top: 20px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# Load ML model (commented out until actual model is available)
-@st.cache_resource
-def load_model():
+# Load the dataset (at the beginning)
+@st.cache_data
+def load_car_data():
     try:
-        with open('car_price_model.pkl', 'rb') as f:
-            model = pickle.load(f)
-        return model
-    except:
-        return None
+        return pd.read_csv('cleaned_car_price_data.csv')
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return pd.DataFrame()
 
-model = load_model()
-model_loaded = model is not None
+car_data = load_car_data()
 
-# Your Tableau Dashboard Embed Codes Dictionary
-
+# Define dashboard embed codes (as it was missing)
 dashboard_embed_codes = {
     "Price by Fuel & Brand": """
     <div style='border-radius: 10px; overflow: hidden; padding: 10px; background-color: #f0f0f0; margin: 0 auto; width: 95%; max-width: 2000px;'>
@@ -192,7 +196,7 @@ dashboard_embed_codes = {
         vizElement.parentNode.insertBefore(scriptElement, vizElement);
         </script>    </div>
     """,
-    "Best Future Plot": """
+    "Best Features Plot": """
     <div style='border-radius: 10px; overflow: hidden; padding: 10px; background-color: #f0f0f0; margin: 0 auto; width: 95%; max-width: 1200px;'>
         <div style='background-color: #4b3f72; color: #ffd166; padding: 8px; margin-bottom: 10px; border-radius: 8px; text-align: center; font-weight: bold; max-width: 600px; margin-left: auto; margin-right: auto;'>
             For better viewing please use the full screen button in the bottom right corner.
@@ -242,15 +246,67 @@ dashboard_embed_codes = {
     """
 }
 
+# Load ML model
+@st.cache_resource
+def load_model():
+    try:
+        with open('car_price_model.pkl', 'rb') as f:
+            model_info = pickle.load(f)
+        return model_info
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
+
+model_info = load_model()
+model_loaded = model_info is not None
+
+if model_loaded:
+    model = model_info['model']
+    selected_features = model_info['features']
+    r2_score_val = model_info.get('r2_score', 0.94)
 
 # Main title and description
 st.markdown('<h1 class="main-header">🚗 Car Price Prediction & Analysis</h1>', unsafe_allow_html=True)
 
-# Navigation with tabs
-tab1, tab2 = st.tabs(["📊 Analysis Dashboards", "🔮 Price Prediction"])
+# Show model diagnostic information (optional - can be helpful during development)
+with st.expander("Model Diagnostic Information", expanded=False):
+    try:
+        st.success("Model loaded successfully!")
+        
+        st.write("Model information:")
+        st.write("- Model type:", type(model_info['model']))
+        st.write("- Features used:", model_info['features'])
+        st.write("- R² score:", model_info.get('r2_score', "Not specified"))
+        
+        test_data = {
+            'Year': 2015,
+            'Engine_Size': 2.0,
+            'Mileage': 50000,
+            'Fuel_Type_Electric': 0,
+            'Transmission_Manual': 0
+        }
+        test_df = pd.DataFrame([test_data])
+        
+        st.write("Test data:", test_data)
+        
+        try:
+            test_prediction = model_info['model'].predict(test_df)[0]
+            abs_prediction = abs(test_prediction)
+            st.write("Original test prediction:", test_prediction)
+            st.write("Adjusted test prediction (absolute value):", abs_prediction)
+        except Exception as predict_error:
+            st.error(f"Could not make test prediction: {predict_error}")
+        
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
 
+# Navigation with tabs
+tab1 = st.tabs(["📊 Analysis Dashboards"])[0]
+
+# Tab 1: Analysis Dashboards
 with tab1:
-    st.subheader("Car Data Analysis Dashboards")
+    st.markdown('<div class="dashboard-main-title">Car Data Analysis Dashboards</div>', unsafe_allow_html=True)
+    loading_message = st.empty()
     
     # Dashboard selection with cards
     col1, col2 = st.columns(2)
@@ -259,33 +315,33 @@ with tab1:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Price by Fuel & Brand")
         st.image("images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
-        dashboard_choice1 = st.button("View Dashboard", key="db1")
+        dashboard_choice1 = st.button("View Dashboard", key="db1", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Engine Specs Heatmap")
-        st.image("images/Best_Feature_plot.png", output_format="PNG", width=None)
-        dashboard_choice3 = st.button("View Dashboard", key="db3")
+        st.image("images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
+        dashboard_choice3 = st.button("View Dashboard", key="db3", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
-
-# Updated dashboard card code for col2
+    
     with col2:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Model Price Analysis")
         st.image("images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
-        dashboard_choice2 = st.button("View Dashboard", key="db2")
+        dashboard_choice2 = st.button("View Dashboard", key="db2", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
-        st.subheader("Price Trend Forecast")
-        st.image("images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
-        dashboard_choice4 = st.button("View Dashboard", key="db4")
+        st.subheader("Best Features Plot")
+        st.image("images/Best_Feature_Plot.png", output_format="PNG", width=None)
+        dashboard_choice4 = st.button("View Dashboard", key="db4", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        
-    # Dashboard display section - improved for better scrolling
+    
+    # Dashboard display section
     dashboard_displayed = False
     
     if dashboard_choice1 or dashboard_choice2 or dashboard_choice3 or dashboard_choice4:
+        loading_message.success("Dashboard is loading. You can view it by scrolling down.")
         dashboard_displayed = True
         st.markdown('<div id="dashboard-view" class="dashboard-view"></div>', unsafe_allow_html=True)
         st.info("💡 **Please make it full screen for better viewing.**")
@@ -300,176 +356,13 @@ with tab1:
             st.markdown("### Engine Specs Heatmap Dashboard")
             components.html(dashboard_embed_codes["Engine Specs Heatmap"], height=800, scrolling=True)
         elif dashboard_choice4:
-            st.markdown("### Price Trend Forecast Dashboard")
-            components.html(dashboard_embed_codes["Price Trend Forecast"], height=800, scrolling=True)
-
+            st.markdown("### Best Features Plot Dashboard")
+            components.html(dashboard_embed_codes["Best Features Plot"], height=800, scrolling=True)
+    
     if not dashboard_displayed:
         st.info("👆 Select a dashboard above or click on the 'Price Prediction' tab to use our ML model.")
 
-with tab2:
-    st.subheader("Car Price Prediction")
-    st.write("Enter your car specifications below and our AI model will predict its price!")
-    
-    if model_loaded:
-        # Two-column input form
-        with st.form("prediction_form"):
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                brand = st.selectbox("Brand", ["Toyota", "Honda", "Ford", "BMW", "Mercedes", "Audi", "Volkswagen", "Chevrolet", "Hyundai", "Kia"])
-                model_year = st.slider("Model Year", 2000, 2023, 2020)
-                mileage = st.number_input("Mileage (km)", 0, 500000, 50000, step=1000)
-                engine_size = st.slider("Engine Size (L)", 1.0, 5.0, 2.0, step=0.1)
-            
-            with col2:
-                fuel_type = st.selectbox("Fuel Type", ["Petrol", "Diesel", "Hybrid", "Electric"])
-                transmission = st.selectbox("Transmission", ["Automatic", "Manual", "Semi-Automatic"])
-                body_type = st.selectbox("Body Type", ["Sedan", "Hatchback", "SUV", "Coupe", "Wagon"])
-                condition = st.slider("Vehicle Condition", 1, 10, 7, help="1=Very Poor, 10=Excellent")
-            
-            submit_button = st.form_submit_button(label="Predict Price")
-        
-        if submit_button:
-            # Prepare features for the model
-            features = {
-                'brand': brand,
-                'model_year': model_year,
-                'mileage': mileage,
-                'engine_size': engine_size,
-                'fuel_type': fuel_type,
-                'transmission': transmission,
-                'body_type': body_type,
-                'condition': condition
-            }
-            
-            # For demo purposes - replace with actual model prediction
-            # In real implementation, use: predicted_price = model.predict(prepared_features)[0]
-            
-            # Simple simulation for demonstration
-            with st.spinner("Calculating price..."):
-                time.sleep(1)  # Simulate computation time
-                base_price = 10000
-                brand_factor = {"Toyota": 1.0, "Honda": 0.95, "Ford": 0.9, "BMW": 1.5, 
-                              "Mercedes": 1.6, "Audi": 1.4, "Volkswagen": 1.1, 
-                              "Chevrolet": 0.85, "Hyundai": 0.8, "Kia": 0.75}
-                fuel_factor = {"Petrol": 1.0, "Diesel": 1.1, "Hybrid": 1.3, "Electric": 1.4}
-                transmission_factor = {"Automatic": 1.1, "Manual": 0.9, "Semi-Automatic": 1.05}
-                
-                predicted_price = (base_price * brand_factor[brand] * 
-                                (1 + (model_year - 2000) * 0.03) * 
-                                (1 - mileage/500000) * 
-                                (engine_size * 0.4) * 
-                                fuel_factor[fuel_type] * 
-                                transmission_factor[transmission] * 
-                                (condition / 5))
-            
-            # Display the prediction result
-            st.success(f"Estimated Car Price: ${predicted_price:,.2f}")
-            
-            # Gauge chart visualization
-            fig = go.Figure(go.Indicator(
-                mode = "gauge+number+delta",
-                value = predicted_price,
-                title = {'text': "Estimated Price (USD)"},
-                domain = {'x': [0, 1], 'y': [0, 1]},
-                gauge = {
-                    'axis': {'range': [None, max(30000, predicted_price * 1.5)]},
-                    'bar': {'color': "darkblue"},
-                    'steps': [
-                        {'range': [0, 10000], 'color': "lightgray"},
-                        {'range': [10000, 20000], 'color': "gray"}
-                    ],
-                    'threshold': {
-                        'line': {'color': "red", 'width': 4},
-                        'thickness': 0.75,
-                        'value': predicted_price
-                    }
-                }
-            ))
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # "What-If" scenarios section
-            st.subheader("Price Impact Factors")
-            
-            # Mileage impact
-            mileage_vals = [0, 50000, 100000, 150000, 200000, 250000]
-            mileage_prices = []
-            
-            for mi in mileage_vals:
-                temp_price = (base_price * brand_factor[brand] * 
-                           (1 + (model_year - 2000) * 0.03) * 
-                           (1 - mi/500000) * 
-                           (engine_size * 0.4) * 
-                           fuel_factor[fuel_type] * 
-                           transmission_factor[transmission] * 
-                           (condition / 5))
-                mileage_prices.append(temp_price)
-            
-            # Year impact
-            year_vals = list(range(model_year-10, model_year+5, 3))
-            year_prices = []
-            
-            for yr in year_vals:
-                if yr < 2000:  # Handle years before 2000 appropriately
-                    yr_factor = 0.6
-                else:
-                    yr_factor = 1 + (yr - 2000) * 0.03
-                    
-                temp_price = (base_price * brand_factor[brand] * 
-                           yr_factor * 
-                           (1 - mileage/500000) * 
-                           (engine_size * 0.4) * 
-                           fuel_factor[fuel_type] * 
-                           transmission_factor[transmission] * 
-                           (condition / 5))
-                year_prices.append(temp_price)
-            
-            # Create impact visualizations
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                fig_mileage = px.line(
-                    x=mileage_vals, 
-                    y=mileage_prices,
-                    labels={"x": "Mileage (km)", "y": "Estimated Price ($)"},
-                    title="How Mileage Affects Price"
-                )
-                fig_mileage.update_traces(mode='lines+markers')
-                st.plotly_chart(fig_mileage)
-                
-            with col2:
-                fig_year = px.line(
-                    x=year_vals, 
-                    y=year_prices,
-                    labels={"x": "Model Year", "y": "Estimated Price ($)"},
-                    title="How Model Year Affects Price"
-                )
-                fig_year.update_traces(mode='lines+markers')
-                st.plotly_chart(fig_year)
-            
-            # Feature importance visualization
-            st.subheader("Feature Importance")
-            
-            # Simulated feature importance (replace with actual from your model)
-            features = ['Brand', 'Year', 'Mileage', 'Engine', 'Fuel', 'Transmission', 'Condition']
-            importance = [0.25, 0.20, 0.18, 0.15, 0.10, 0.07, 0.05]
-            
-            fig_importance = px.bar(
-                x=importance,
-                y=features,
-                orientation='h',
-                labels={"x": "Importance", "y": "Feature"},
-                title="Model Feature Importance",
-                color=importance,
-                color_continuous_scale='Blues'
-            )
-            st.plotly_chart(fig_importance)
-            
-    else:
-        st.error("ML model could not be loaded. Please check your model file.")
 
-# Sidebar with project information
 st.sidebar.title("About This Project")
 st.sidebar.info("""
 This application provides car price prediction using machine learning and data analysis tools.
@@ -481,14 +374,15 @@ This application provides car price prediction using machine learning and data a
 - Market trend visualization
 
 **Model Information:**
-- Algorithm: Random Forest
+- Algorithm: Ridge Regression
 - Training data: 10,000+ vehicle records
-- Accuracy (R²): 0.89
+- Accuracy (R²): 0.94
 """)
 
 st.sidebar.title("Creator")
-st.sidebar.markdown("Developer: [Your Name]")
-st.sidebar.markdown("[GitHub Repository](https://github.com/username/car-price-prediction)")
+st.sidebar.markdown("Developer: Ilker Aydin Yilmaz")
+st.sidebar.markdown("[GitHub Repository](https://github.com/IamIlker0/car-price-prediction)")
+
 
 
 
