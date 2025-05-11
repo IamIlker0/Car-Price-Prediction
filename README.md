@@ -28,6 +28,17 @@ The dataset contains **10,000 entries**, with each row representing a car and it
 - **Owner\_Count**: Number of previous owners
 - **Price**: Estimated selling price of the car (target variable)
 
+## Live Demo
+
+You can try out the car price prediction model through our interactive Streamlit web application:
+[Car Price Prediction App](https://car-price-prediction-nuhuqnx7b2xqerjt5munkt.streamlit.app)
+
+The live demo allows you to:
+- Input car specifications
+- Get instant price predictions
+- Explore data visualizations and model insights
+- Understand key factors affecting car prices
+
 ## Installation
 
 To set up and run this project, install the necessary dependencies using the following commands:
