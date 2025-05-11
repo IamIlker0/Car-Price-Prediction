@@ -320,7 +320,7 @@ with tab1:
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Engine Specs Heatmap")
-        st.image("streamlit /images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
+        st.image("streamlit/images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
         dashboard_choice3 = st.button("View Dashboard", key="db3", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
