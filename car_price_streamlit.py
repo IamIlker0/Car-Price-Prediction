@@ -314,26 +314,26 @@ with tab1:
     with col1:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Price by Fuel & Brand")
-        st.image("Car-Price-Prediction/images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
+        st.image("/mount/src/Car-Price-Prediction/images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
         dashboard_choice1 = st.button("View Dashboard", key="db1", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Engine Specs Heatmap")
-        st.image("Car-Price-Prediction/images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
+        st.image("/mount/src/Car-Price-Prediction/images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
         dashboard_choice3 = st.button("View Dashboard", key="db3", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Model Price Analysis")
-        st.image("Car-Price-Prediction/images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
+        st.image("/mount/src/Car-Price-Prediction/images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
         dashboard_choice2 = st.button("View Dashboard", key="db2", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Best Features Plot")
-        st.image("Car-Price-Prediction/images/Best_Feature_Plot.png", output_format="PNG", width=None)
+        st.image("/mount/src/Car-Price-Prediction/images/Best_Feature_Plot.png", output_format="PNG", width=None)
         dashboard_choice4 = st.button("View Dashboard", key="db4", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
