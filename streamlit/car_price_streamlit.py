@@ -49,7 +49,7 @@ st.markdown("""
 @st.cache_data
 def load_car_data():
     try:
-        return pd.read_csv('cleaned_car_price_data.csv')
+        return pd.read_csv('streamlit/cleaned_car_price_data.csv')
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return pd.DataFrame()
@@ -250,7 +250,7 @@ dashboard_embed_codes = {
 @st.cache_resource
 def load_model():
     try:
-        with open('car_price_model.pkl', 'rb') as f:
+        with open('streamlit/car_price_model.pkl', 'rb') as f:
             model_info = pickle.load(f)
         return model_info
     except Exception as e:
@@ -314,26 +314,26 @@ with tab1:
     with col1:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Price by Fuel & Brand")
-        st.image("/mount/src/Car-Price-Prediction/images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
+        st.image("streamlit/images/Price - Brand and Fuel_Type.png", output_format="PNG", width=None)
         dashboard_choice1 = st.button("View Dashboard", key="db1", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Engine Specs Heatmap")
-        st.image("/mount/src/Car-Price-Prediction/images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
+        st.image("streamlit/images/Engine_Size%BrandModal-Fuel_typeTransmission.png", output_format="PNG", width=None)
         dashboard_choice3 = st.button("View Dashboard", key="db3", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Model Price Analysis")
-        st.image("/mount/src/Car-Price-Prediction/images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
+        st.image("streamlit/images/brand&model-fuel_type&transmission-brand&transmission.png", output_format="PNG", width=None)
         dashboard_choice2 = st.button("View Dashboard", key="db2", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Best Features Plot")
-        st.image("/mount/src/Car-Price-Prediction/images/Best_Feature_Plot.png", output_format="PNG", width=None)
+        st.image("streamlit/images/Best_Feature_Plot.png", output_format="PNG", width=None)
         dashboard_choice4 = st.button("View Dashboard", key="db4", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
