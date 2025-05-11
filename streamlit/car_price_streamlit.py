@@ -333,7 +333,7 @@ with tab1:
         
         st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
         st.subheader("Best Features Plot")
-        st.image("streamlit/images/Best_Feature_Plot.png", output_format="PNG", width=None)
+        st.image("streamlit/images/Best_Feature_plot.png", output_format="PNG", width=None)
         dashboard_choice4 = st.button("View Dashboard", key="db4", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
